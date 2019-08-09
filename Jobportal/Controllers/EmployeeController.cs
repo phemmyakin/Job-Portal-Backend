@@ -1,12 +1,18 @@
 ﻿using AutoMapper;
+using Jobportal.Data.Services;
 using Jobportal.Models;
 using Jobportal.Services;
 using JobPortal.Data.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 
@@ -14,27 +20,44 @@ namespace JobPortal.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
-    public class EmployeeController : ControllerBase
+    [ApiController]
+    public class EmployeeController : Controller
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IMapper _mapper;
+        private readonly AppSettings _appSettings;
+        
 
-        public EmployeeController(IEmployeeRepository employeeRepository, IMapper mapper)
+        public EmployeeController(IEmployeeRepository employeeRepository, IMapper mapper, IOptions<AppSettings> appSettings)
         {
             _employeeRepository = employeeRepository;
             _mapper = mapper;
+            _appSettings = appSettings.Value;
         }
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody]EmployeeDto employeeParam)
         {
-            var user = _employeeRepository.Authenticate(employeeParam.Username, employeeParam.Password);
+            var employee = _employeeRepository.Authenticate(employeeParam.Username, employeeParam.Password);
 
-            if (user == null)
+            if (employee == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, employee.EmployeeId.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
 
-            return Ok(user);
+            return Ok(employee);
         }
 
 
@@ -60,7 +83,23 @@ namespace JobPortal.Controllers
         }
 
 
+        [HttpGet]
+        public IActionResult GetEmployees()
+        {
+            var employees = _employeeRepository.GetEmployees();
+            var employeeDtos = _mapper.Map<IList<EmployeeDto>>(employees);
+            return Ok(employeeDtos);
+        }
 
+
+
+        [HttpGet("{employeeId}")]
+        public IActionResult GetEmployee(int employeeId)
+        {
+            var employee = _employeeRepository.GetEmployee(employeeId);
+            var employeeDto = _mapper.Map<EmployeeDto>(employee);
+            return Ok(employeeDto);
+        }
 
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody]EmployeeDto employeeDto)

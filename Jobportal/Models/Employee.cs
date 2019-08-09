@@ -40,8 +40,8 @@ namespace Jobportal.Models
         public string YearsOfExperience { get; set; }
         [Required]
         public string Avalability { get; set; }
-        public Base64FormattingOptions CV { get; set; }
-        public Base64FormattingOptions Passport{get; set;}
+        public string CV { get; set; }
+        public string Passport{get; set;}
         public string Username { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
