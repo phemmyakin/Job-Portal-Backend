@@ -9,3 +9,6 @@ C:\Users\Vatebra-EDMS-WAEC\source\repos\Employee\Jobportal\obj\Debug\netcoreapp2
 C:\Users\Vatebra-EDMS-WAEC\source\repos\Employee\Jobportal\obj\Debug\netcoreapp2.2\Jobportal.AssemblyInfoInputs.cache
 C:\Users\Vatebra-EDMS-WAEC\source\repos\Employee\Jobportal\obj\Debug\netcoreapp2.2\Jobportal.AssemblyInfo.cs
 C:\Users\Vatebra-EDMS-WAEC\source\repos\Employee\Jobportal\obj\Debug\netcoreapp2.2\Jobportal.RazorTargetAssemblyInfo.cache
+C:\Users\Vatebra-EDMS-WAEC\source\repos\Employee\Jobportal\bin\Debug\netcoreapp2.2\Jobportal.pdb
+C:\Users\Vatebra-EDMS-WAEC\source\repos\Employee\Jobportal\obj\Debug\netcoreapp2.2\Jobportal.dll
+C:\Users\Vatebra-EDMS-WAEC\source\repos\Employee\Jobportal\obj\Debug\netcoreapp2.2\Jobportal.pdb
