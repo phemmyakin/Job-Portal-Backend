@@ -8,11 +8,11 @@ namespace Jobportal.Services
 {
     public interface IEmployeeRepository
     {
-        Employee Authenticate(string username, string password);
-        ICollection<Employee> GetEmployees();
+        //Employee Authenticate(string username, string password);
+        IEnumerable<Employee> GetEmployees();
         Employee GetEmployee(int employeeId);
-        Employee CreateEmployee(Employee employee, string password);
+      //  Employee CreateEmployee(Employee employee, string password);
         void UpdateEmployee(Employee employee, string password = null);
-        bool Save();
+      //  bool Save();
     }
 }

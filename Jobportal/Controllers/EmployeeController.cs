@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Jobportal.Data.Services;
 using Jobportal.Models;
 using Jobportal.Services;
 using JobPortal.Data.Dto;
@@ -21,43 +20,29 @@ namespace JobPortal.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController : Controller
+    public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IMapper _mapper;
-        private readonly AppSettings _appSettings;
-        
 
-        public EmployeeController(IEmployeeRepository employeeRepository, IMapper mapper, IOptions<AppSettings> appSettings)
+
+        public EmployeeController(IEmployeeRepository employeeRepository, IMapper mapper)
         {
             _employeeRepository = employeeRepository;
             _mapper = mapper;
-            _appSettings = appSettings.Value;
         }
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody]EmployeeDto employeeParam)
         {
-            var employee = _employeeRepository.Authenticate(employeeParam.Username, employeeParam.Password);
+            //var employee = _employeeRepository.Authenticate(employeeParam.Email, employeeParam.Password);
 
-            if (employee == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, employee.EmployeeId.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
+            //if (employee == null)
+            //    return BadRequest(new { message = "Username or password is incorrect" });
 
-            return Ok(employee);
+
+            return Ok();
         }
 
 
@@ -71,8 +56,8 @@ namespace JobPortal.Controllers
 
             try
             {
-                // save 
-                _employeeRepository.CreateEmployee(employee, employeeDto.Password);
+                //// save 
+                //_employeeRepository.CreateEmployee(employee, employeeDto.Password);
                 return Ok();
             }
             catch (Exception ex)
@@ -107,11 +92,10 @@ namespace JobPortal.Controllers
             // map dto to entity and set id
             var employee = _mapper.Map<Employee>(employeeDto);
             employee.EmployeeId = id;
-
             try
             {
                 // save 
-                _employeeRepository.UpdateEmployee(employee, employeeDto.Password);
+                _employeeRepository.UpdateEmployee(employee);
                 return Ok();
             }
             catch (Exception ex)
